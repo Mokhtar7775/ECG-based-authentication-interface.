@@ -4,6 +4,16 @@ from scipy import signal
 import glob
 import librosa
 
+
+def moving_window_integration(signal):
+        window_size = int(0.1* 1000)  # Window size for integration
+        signal_int = np.convolve(signal, np.ones(window_size), mode='valid')
+
+        # Thresholding
+        # threshold = 0.4 * np.max(signal_int)  # Threshold for QRS detection
+        # qrs_detect = np.zeros(signal_int.shape)
+        # qrs_detect[signal_int > threshold] = 1
+        return signal_int
 dataset = glob.glob('DataSet/*')
 for patient in dataset:
         records = glob.glob(patient+'\\*')
@@ -13,36 +23,29 @@ for patient in dataset:
                 low = 1.0 / nyq
                 high = 40.0 / nyq
                 num, den = signal.butter(2, [low, high], btype='bandpass', output='ba')
-                plt.plot(np.arange(0, 100), file[slice(100)])
+                plt.plot(np.arange(0, 200), file[slice(200)])
                 plt.title(" ECG Signal of "+record[11:])
                 plt.show()
                 amp = list(file)
 
                 filtered = signal.lfilter(num, den, amp)
-                plt.plot(np.arange(0, 100), filtered[slice(100)])
+                plt.plot(np.arange(0, 200), filtered[slice(200)])
                 plt.title("Filtered Signal of "+record[11:])
                 plt.show()
                 print(len(filtered))
-                diff = []
-                for y in range(0, len(filtered) - 1):
-                        yDiff = (filtered[y + 1] - filtered[y])
-                        diff.append(yDiff)
+                diff = np.diff(filtered,n=1)
                 print(len(diff))
-                plt.plot(np.arange(0, 100), diff[slice(100)])
+                plt.plot(np.arange(0, 200), diff[slice(200)])
                 plt.title("Derevatived Signal of "+record[11:])
                 plt.show()
-                sq = []
+                sq = diff**2
                 print(len(sq))
-                plt.plot(np.arange(0, 100), sq[slice(100)])
+                plt.plot(np.arange(0, 200), sq[slice(200)])
                 plt.title("Squaring Signal of "+record[11:])
                 plt.show()
-                # sq = np.array(sq)
-                frames = librosa.util.frame(sq,frame_length= len(sq),hop_length= 1)
-                print("frames : ",frames)
-                windowed_frames = np.hanning(len(sq)).reshape(-1,1)*frames
-                print("windowed : ",windowed_frames)
-                plt.plot(np.arange(0,100),windowed_frames[slice(100)])
-                plt.title("Windowed Signal of "+record[11:])
+                win = moving_window_integration(sq)
+                plt.plot(np.arange(0, 200), win[slice(200)])
+                plt.title("Windowed Signal of " + record[11:])
                 plt.show()
 
 
