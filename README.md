@@ -1,1 +1,1 @@
-# HCI
+#The ECG-Based Authentication Interface project aims to develop a secure and innovative biometric identification system using Electrocardiogram (ECG) signals. This system will be designed to identify individuals based on their unique ECG patterns. The project will involve data collection from the PTB database (or any suitable ECG database), preprocessing of ECG signals, feature extraction from both fiducial and non-fiducial points, selection of a suitable classifier, and a user-friendly interface for practical use.
